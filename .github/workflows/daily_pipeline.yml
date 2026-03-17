@@ -1,0 +1,70 @@
+name: MavenFlow Daily Data Pipeline
+
+on:
+  # 1. Jadwal Otomatis (Cron Job)
+  schedule:
+    # Berjalan setiap jam 22:00 UTC (Sama dengan jam 05:00 pagi WIB)
+    - cron: '0 22 * * *'
+    
+  # 2. Tombol Manual (Biar kita bisa klik jalan manual dari web GitHub)
+  workflow_dispatch:
+
+jobs:
+  fetch-and-analyze:
+    runs-on: ubuntu-latest # Robot akan menggunakan OS Linux Ubuntu
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🐍 Setup Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+
+      - name: 📦 Install Dependencies
+        run: pip install -r data_pipeline/requirements.txt
+
+      # continue-on-error: true memastikan kalau 1 web down/error, script lain tetap lanjut
+      - name: 🎬 1. Run Anime Fetcher (Jikan)
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        run: python data_pipeline/fetchers/jikan_anime.py
+        continue-on-error: true
+
+      - name: 🎨 2. Run Pixiv Fetcher
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        run: python data_pipeline/fetchers/pixiv_arts.py
+        continue-on-error: true
+
+      - name: 🎵 3. Run Billboard J-Pop Fetcher
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        run: python data_pipeline/fetchers/billboard_jpop.py
+        continue-on-error: true
+
+      - name: 📰 4. Run Yahoo Trends Fetcher
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        run: python data_pipeline/fetchers/yahoo_trends.py
+        continue-on-error: true
+
+      - name: 💻 5. Run Kakaku Tech Fetcher
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        run: python data_pipeline/fetchers/kakaku_tech.py
+        continue-on-error: true
+
+      - name: 🧠 6. Run Gemini AI Summary (The Brain)
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python data_pipeline/generate_summary.py
