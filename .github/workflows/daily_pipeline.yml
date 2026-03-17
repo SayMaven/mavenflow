@@ -38,6 +38,7 @@ jobs:
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          PIXIV_REFRESH_TOKEN: ${{ secrets.PIXIV_REFRESH_TOKEN}}
         run: python data_pipeline/fetchers/pixiv_arts.py
         continue-on-error: true
 
