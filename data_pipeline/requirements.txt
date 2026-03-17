@@ -1,0 +1,17 @@
+# --- API & Web Scraping ---
+requests
+beautifulsoup4
+
+# --- Database (PostgreSQL/Supabase) ---
+supabase
+
+# --- AI Integration ---
+google-generativeai
+
+# --- Utility & Environment ---
+python-dotenv
+pandas
+
+pixivpy3
+
+lxml
