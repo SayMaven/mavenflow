@@ -26,6 +26,13 @@ jobs:
       - name: 📦 Install Dependencies
         run: pip install -r data_pipeline/requirements.txt
 
+      - name: 🧹 0. Clear Yesterday's Data
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        run: python data_pipeline/clear_db.py
+        continue-on-error: true
+
       # continue-on-error: true memastikan kalau 1 web down/error, script lain tetap lanjut
       - name: 🎬 1. Run Anime Fetcher (Jikan)
         env:
